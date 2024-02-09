@@ -1,0 +1,20 @@
+   body {
+    background: grey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.container{
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+    min-height: 550px;
+    width: 450px;
+}
+
+
+  
+
+  
+ 
