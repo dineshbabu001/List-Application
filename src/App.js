@@ -1,4 +1,3 @@
-// Import necessary dependencies
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -8,7 +7,6 @@ const TodoApp = () => {
   const [inputText, setInputText] = useState("");
 
   useEffect(() => {
-    // Load from local storage on component mount
     const storedTodoList = localStorage.getItem("todoList");
     if (storedTodoList) {
       setTodoList(JSON.parse(storedTodoList));
@@ -16,7 +14,6 @@ const TodoApp = () => {
   }, []);
 
   useEffect(() => {
-    // Save to local storage when the todoList changes
     localStorage.setItem("todoList", JSON.stringify(todoList));
     console.log("Todo list updated:", todoList);
   }, [todoList]);
