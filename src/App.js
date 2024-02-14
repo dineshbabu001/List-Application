@@ -3,91 +3,99 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-// Main App component
-const App = () => {
-  // State for managing to-do list items
-  const [todos, setTodos] = useState([]);
+const TodoApp = () => {
+  const [todoList, setTodoList] = useState([]);
+  const [inputText, setInputText] = useState("");
 
-  // State for managing input field value
-  const [todoText, setTodoText] = useState("");
-
-  // UseEffect for logging when to-do list changes
   useEffect(() => {
-    console.log("To-Do List updated:", todos);
-    // Optional: Persist to-do list in local storage
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  // Function to handle adding a new to-do item
-  const addTodo = () => {
-    if (todoText.trim() !== "") {
-      setTodos([...todos, { text: todoText, id: Date.now() }]);
-      setTodoText("");
-    }
-  };
-
-  // Function to handle deleting a to-do item
-  const deleteTodo = (id) => {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
-  };
-
-  // Function to handle editing a to-do item
-  const editTodo = (id, newText) => {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id ? { ...todo, text: newText } : todo
-    );
-    setTodos(updatedTodos);
-  };
-
-  // Retrieve saved to-do list from local storage on initial load
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (storedTodos) {
-      setTodos(storedTodos);
+    // Load from local storage on component mount
+    const storedTodoList = localStorage.getItem("todoList");
+    if (storedTodoList) {
+      setTodoList(JSON.parse(storedTodoList));
     }
   }, []);
 
-  // JSX for the main application
+  useEffect(() => {
+    // Save to local storage when the todoList changes
+    localStorage.setItem("todoList", JSON.stringify(todoList));
+    console.log("Todo list updated:", todoList);
+  }, [todoList]);
+
+  const addTodo = () => {
+    if (inputText.trim() !== "") {
+      setTodoList([...todoList, { text: inputText, done: false }]);
+      setInputText("");
+    }
+  };
+
+  const deleteTodo = (index) => {
+    const newTodoList = [...todoList];
+    newTodoList.splice(index, 1);
+    setTodoList(newTodoList);
+  };
+
+  const toggleDone = (index) => {
+    const newTodoList = [...todoList];
+    newTodoList[index].done = !newTodoList[index].done;
+    setTodoList(newTodoList);
+  };
+
+  const editTodo = (index, newText) => {
+    const newTodoList = [...todoList];
+    newTodoList[index].text = newText;
+    setTodoList(newTodoList);
+  };
+
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4">To-Do List</h1>
+    <div className="container mt-4">
+      <h1> List App</h1>
       <div className="mb-3">
         <input
           type="text"
-          className="form-control mr-2"
-          placeholder="Add a new to-do"
-          value={todoText}
-          onChange={(e) => setTodoText(e.target.value)}
+          className="form-control"
+          placeholder="Enter a new search"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
         />
-        <button className="btn btn-primary" onClick={addTodo}>
+        <button className="btn btn-primary mt-2" onClick={addTodo}>
           Add
         </button>
       </div>
       <ul className="list-group">
-        {todos.map((todo) => (
+        {todoList.map((todo, index) => (
           <li
-            key={todo.id}
-            className="list-group-item d-flex justify-content-between align-items-center"
+            key={index}
+            className={`list-group-item ${
+              todo.done ? "list-group-item-success" : ""
+            }`}
           >
-            {todo.text}
-            <div>
+            {todo.done ? <del>{todo.text}</del> : todo.text}
+            <div className="float-end">
               <button
-                className="btn btn-danger mr-2"
-                onClick={() => deleteTodo(todo.id)}
+                className="btn btn-sm btn-success me-2"
+                onClick={() => toggleDone(index)}
+                disabled={todo.done}
               >
-                Delete
+                {todo.done ? "Undo" : "Done"}
               </button>
               <button
-                className="btn btn-warning"
+                className="btn btn-sm btn-warning me-2"
                 onClick={() => {
-                  const newText = prompt("Edit your to-do:", todo.text);
+                  const newText = prompt("Edit todo:", todo.text);
                   if (newText !== null) {
-                    editTodo(todo.id, newText);
+                    editTodo(index, newText);
                   }
                 }}
+                disabled={todo.done}
               >
                 Edit
+              </button>
+              <button
+                className="btn btn-sm btn-danger"
+                onClick={() => deleteTodo(index)}
+                disabled={todo.done}
+              >
+                Delete
               </button>
             </div>
           </li>
@@ -97,4 +105,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default TodoApp;
